@@ -5,6 +5,18 @@ import random
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
+class WordCloudGenerator:
+    def __init__(self,mask,color_func,excludes,height,width,text,outputName):
+        self.imageMask=mask
+        self.colorFunc=color_func
+        self.excludingWords=excludes
+        self.height=height
+        self.width=width
+        self.text=text
+        self.outPutName
+
+
+
 def green_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     shade = random.randint(10, 30)
     return "hsl(127, 80%, " + str(shade) + "%)"
@@ -20,6 +32,7 @@ if __name__ == '__main__':
     stopwords.add("United")
     stopwords.add("States")
     stopwords.add("State")
+
 
     wc = WordCloud(collocations=False, height=2129, width=2000, background_color="white", mask=liberty_mask,
                    stopwords=stopwords)
