@@ -2,42 +2,30 @@ from os import path
 from PIL import Image
 import numpy as np
 import random
+import string
 from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
 
 
 class WordCloudGenerator:
-    def __init__(self,mask,color_func,excludes,height,width,text,outputName):
-        self.imageMask=mask
-        self.colorFunc=color_func
-        self.excludingWords=excludes
-        self.height=height
-        self.width=width
-        self.text=text
-        self.outPutName
+    def __init__(self, mask, color_func, excludes: set, height: int, width: int, text: string, output, color):
+        self.image_mask = mask
+        self.color_func = color_func
+        self.excluding_words = excludes
+        self.height = height
+        self.width = width
+        self.document_text = text
+        self.output_name = output
+        self.background_color = color
 
+    def generate(self):
+        stopwords = set(STOPWORDS)
+        stopwords.union(self.excluding_words)
+        wc = WordCloud(collocations=False, height=self.height, width=self.width, background_color=self.background_color,
+                       mask=self.image_mask, stopwords=stopwords)
+        wc.recolor(self.color_func)
+        return wc
 
-
-def green_color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-    shade = random.randint(10, 30)
-    return "hsl(127, 80%, " + str(shade) + "%)"
-
-
-if __name__ == '__main__':
-    d = path.dirname(__file__)
-    text = open(path.join(d, 'const.txt')).read()
-
-    liberty_mask = np.array(Image.open(path.join(d, "liberty.png")))
-    stopwords = set(STOPWORDS)
-    stopwords.add("Article")
-    stopwords.add("United")
-    stopwords.add("States")
-    stopwords.add("State")
-
-
-    wc = WordCloud(collocations=False, height=2129, width=2000, background_color="white", mask=liberty_mask,
-                   stopwords=stopwords)
-
-    wc.generate(text)
-    wc.recolor(color_func=green_color_func, random_state=3)
-    wc.to_file(path.join(d, "liberty_cloud.png"))
-    print("Done")
+    def generate_and_write(self):
+        d = path.dirname(__file__)
+        wc = self.generate()
+        wc.to_file(path.join(d, self.output_name))
